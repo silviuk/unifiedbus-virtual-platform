@@ -1,0 +1,67 @@
+cluster_name: "Huawei-Ascend-SuperPoD-Cluster"
+topology: "Dragonfly+"
+
+fabric:
+  bandwidth_gbps: 800.0
+  hop_latency_ns: 15.0
+  switch_count: 2
+  virtual_lanes: 4
+  credit_buffer_kb: 512
+
+nodes:
+  # Host Compute Nodes (Kunpeng 920/930 ARM CPUs)
+  - id: 1
+    type: "KUNPENG_CPU_HOST"
+    arch: "aarch64"
+    cores: 64
+    memory: "256GB_DDR5"
+    ub_port: 0
+
+  - id: 2
+    type: "KUNPENG_CPU_HOST"
+    arch: "aarch64"
+    cores: 64
+    memory: "256GB_DDR5"
+    ub_port: 1
+
+  # AI Accelerator Nodes (Ascend 910B/910C NPUs)
+  - id: 3
+    type: "ASCEND_NPU_ACCEL"
+    arch: "da_vinci_v2"
+    ai_cores: 32
+    memory: "64GB_HBM3"
+    ub_port: 2
+
+  - id: 4
+    type: "ASCEND_NPU_ACCEL"
+    arch: "da_vinci_v2"
+    ai_cores: 32
+    memory: "64GB_HBM3"
+    ub_port: 3
+
+  - id: 5
+    type: "ASCEND_NPU_ACCEL"
+    arch: "da_vinci_v2"
+    ai_cores: 32
+    memory: "64GB_HBM3"
+    ub_port: 4
+
+  - id: 6
+    type: "ASCEND_NPU_ACCEL"
+    arch: "da_vinci_v2"
+    ai_cores: 32
+    memory: "64GB_HBM3"
+    ub_port: 5
+
+  # Disaggregated Pooled Memory Nodes (OBMM / UBs Mem)
+  - id: 7
+    type: "POOLED_MEM_APPLIANCE"
+    arch: "cxl_ub_bridge"
+    memory: "1024GB_DDR5"
+    ub_port: 6
+
+  - id: 8
+    type: "POOLED_MEM_APPLIANCE"
+    arch: "cxl_ub_bridge"
+    memory: "1024GB_DDR5"
+    ub_port: 7

@@ -1,0 +1,36 @@
+# Python bytecode & caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Compiled C binaries & libraries
+*.o
+*.so
+*.a
+*.dylib
+unifiedbus-qemu-silicon/libub_silicon.so
+unifiedbus-qemu-silicon/liburma.so
+unifiedbus-qemu-silicon/libcdma.so
+unifiedbus-qemu-silicon/libobmm.so
+unifiedbus-qemu-silicon/ubctl/ubctl
+unifiedbus-qemu-silicon/demonstrators/demo_urma_p2p
+unifiedbus-qemu-silicon/demonstrators/demo_cdma_async
+unifiedbus-qemu-silicon/demonstrators/demo_obmm_memory_pool
+unifiedbus-qemu-silicon/demonstrators/demo_hccl_ring
+unifiedbus-qemu-silicon/demonstrators/demo_cip_security
+
+# Sockets and temporary shared memory
+/tmp/ub-fabric/
+/dev/shm/ub_node_*
+*.sock
+
+# System and editor files
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/

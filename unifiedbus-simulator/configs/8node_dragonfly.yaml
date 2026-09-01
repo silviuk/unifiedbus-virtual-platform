@@ -1,0 +1,26 @@
+cluster_name: "8Node-Dragonfly-SuperPoD"
+topology: "Dragonfly+"
+
+fabric:
+  bandwidth_gbps: 800.0
+  hop_latency_ns: 15.0
+  switch_count: 2
+  virtual_lanes: 4
+
+nodes:
+  - id: 1
+    type: "ASCEND_NPU_ACCEL"
+  - id: 2
+    type: "ASCEND_NPU_ACCEL"
+  - id: 3
+    type: "ASCEND_NPU_ACCEL"
+  - id: 4
+    type: "ASCEND_NPU_ACCEL"
+  - id: 5
+    type: "ASCEND_NPU_ACCEL"
+  - id: 6
+    type: "ASCEND_NPU_ACCEL"
+  - id: 7
+    type: "ASCEND_NPU_ACCEL"
+  - id: 8
+    type: "ASCEND_NPU_ACCEL"

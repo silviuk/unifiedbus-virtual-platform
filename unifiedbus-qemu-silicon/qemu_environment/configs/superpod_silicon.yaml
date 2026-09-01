@@ -1,0 +1,41 @@
+cluster_name: "Huawei-Ascend-SuperPoD-Silicon-Cluster"
+fabric:
+  socket_path: "/tmp/ub-fabric/silicon.sock"
+  link_bandwidth_gbps: 800.0
+  hop_latency_ns: 15.0
+
+nodes:
+  - id: 1
+    type: "KUNPENG_CPU_HOST"
+    arch: "x86_64"
+    vcpu: 4
+    memory_mb: 2048
+    shm_size_mb: 64
+
+  - id: 2
+    type: "KUNPENG_CPU_HOST"
+    arch: "x86_64"
+    vcpu: 4
+    memory_mb: 2048
+    shm_size_mb: 64
+
+  - id: 3
+    type: "ASCEND_NPU_ACCEL"
+    arch: "x86_64"
+    vcpu: 4
+    memory_mb: 2048
+    shm_size_mb: 64
+
+  - id: 4
+    type: "ASCEND_NPU_ACCEL"
+    arch: "x86_64"
+    vcpu: 4
+    memory_mb: 2048
+    shm_size_mb: 64
+
+  - id: 7
+    type: "POOLED_MEM_APPLIANCE"
+    arch: "x86_64"
+    vcpu: 2
+    memory_mb: 4096
+    shm_size_mb: 128

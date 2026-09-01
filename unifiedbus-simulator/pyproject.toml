@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "unifiedbus-simulator"
+version = "0.1.0"
+description = "QEMU-Based UnifiedBus (UB / 灵衢) Co-Emulation & SuperPoD Interconnect Simulator"
+authors = [{ name = "UnifiedBus Developer Community" }]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pyyaml>=6.0",
+    "numpy>=1.22.0",
+]
+
+[project.scripts]
+ub-fabric = "daemon.fabric:main"
+ubctl = "guest_sdk.python.unifiedbus.ubctl:main"
+ub-launcher = "qemu.launcher:main"
+ub-dashboard = "visualizer.dashboard:main"
+
+[tool.setuptools.packages.find]
+where = ["guest_sdk/python", "."]
+include = ["unifiedbus*", "daemon*", "qemu*", "visualizer*"]

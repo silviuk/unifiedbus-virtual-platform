@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnifiedBus (UB / 灵衢) SuperPoD Simulator Visualizer</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-purple: #c084fc;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text); padding: 24px; }
+        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+        .logo { font-size: 24px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+        .badge { background: #0369a1; padding: 4px 10px; border-radius: 9999px; font-size: 12px; color: #fff; font-weight: 600; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+        .card h3 { font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+        .card .value { font-size: 26px; font-weight: 700; color: var(--accent-green); }
+        .card .desc { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+        
+        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media(max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        
+        .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        th, td { padding: 10px 14px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-dim); font-weight: 600; background: #182234; }
+        tr:hover { background: #26334d; }
+        .node-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 6px; font-weight: 600; font-size: 12px; }
+        .chip-cpu { background: #1e3a8a; color: #93c5fd; }
+        .chip-npu { background: #581c87; color: #d8b4fe; }
+        .chip-mem { background: #064e3b; color: #6ee7b7; }
+        
+        .events-log { max-height: 380px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+        .event-row { padding: 8px 10px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; }
+        .event-type { font-weight: bold; color: var(--accent); width: 100px; }
+        .event-time { color: var(--text-dim); font-size: 11px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); display: inline-block; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span>⚡ UnifiedBus (UB / 灵衢) Fabric Visualizer</span>
+            <span class="badge">v2.0 SuperPoD</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-dim);">
+            <span class="status-dot"></span> Interconnect Status: <strong style="color: var(--accent-green);">ONLINE</strong>
+        </div>
+    </header>
+
+    <div class="stats-grid">
+        <div class="card">
+            <h3>Fabric Bandwidth</h3>
+            <div class="value" id="val-bw">800 Gbps</div>
+            <div class="desc">Low-Latency Optical/Copper Fabric</div>
+        </div>
+        <div class="card">
+            <h3>Routed Packets</h3>
+            <div class="value" id="val-pkts">0</div>
+            <div class="desc">URMA / CDMA / OBMM Ops</div>
+        </div>
+        <div class="card">
+            <h3>Routed Flits</h3>
+            <div class="value" id="val-flits">0</div>
+            <div class="desc">64-Byte Flow Control Units</div>
+        </div>
+        <div class="card">
+            <h3>Total Throughput</h3>
+            <div class="value" id="val-bytes">0 MB</div>
+            <div class="desc">Interconnect Data Transferred</div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div>
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="section-title">
+                    <span>Active SuperPoD Nodes (XPUs & Memory Units)</span>
+                    <span id="node-count" style="font-size: 12px; color: var(--text-dim);">0 Nodes Attached</span>
+                </div>
+                <table id="nodes-table">
+                    <thead>
+                        <tr>
+                            <th>Node ID</th>
+                            <th>Architecture / Type</th>
+                            <th>TX Traffic</th>
+                            <th>RX Traffic</th>
+                            <th>Uptime</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" style="text-align: center; color: var(--text-dim);">Waiting for nodes...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="section-title">
+                    <span>Disaggregated Memory Pools (OBMM / UBs Mem)</span>
+                </div>
+                <table id="pools-table">
+                    <thead>
+                        <tr>
+                            <th>Pool ID</th>
+                            <th>Owner Node</th>
+                            <th>Pool Size</th>
+                            <th>Token ID</th>
+                            <th>Permissions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" style="text-align: center; color: var(--text-dim);">No active memory pools</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <div class="section-title">
+                    <span>Real-Time Interconnect Telemetry</span>
+                </div>
+                <div class="events-log" id="events-container">
+                    <div style="padding: 10px; color: var(--text-dim);">Awaiting fabric events...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        async function updateDashboard() {
+            try {
+                const [topoRes, statsRes] = await Promise.all([
+                    fetch('/api/topology').then(r => r.json()),
+                    fetch('/api/stats').then(r => r.json())
+                ]);
+
+                // Update Stats Cards
+                if (statsRes.total_packets !== undefined) {
+                    document.getElementById('val-pkts').innerText = statsRes.total_packets.toLocaleString();
+                    document.getElementById('val-flits').innerText = statsRes.total_flits.toLocaleString();
+                    document.getElementById('val-bytes').innerText = formatBytes(statsRes.total_bytes);
+                }
+                if (topoRes.link_bw_gbps) {
+                    document.getElementById('val-bw').innerText = topoRes.link_bw_gbps + ' Gbps';
+                }
+
+                // Update Nodes Table
+                const nodesTbody = document.querySelector('#nodes-table tbody');
+                if (topoRes.nodes && topoRes.nodes.length > 0) {
+                    const validNodes = topoRes.nodes.filter(n => n.node_id < 0xFF00);
+                    document.getElementById('node-count').innerText = `${validNodes.length} Nodes Attached`;
+                    nodesTbody.innerHTML = validNodes.map(n => {
+                        let chipClass = 'chip-npu';
+                        if (n.node_type.includes('CPU')) chipClass = 'chip-cpu';
+                        if (n.node_type.includes('MEM')) chipClass = 'chip-mem';
+                        return `<tr>
+                            <td><strong>0x${n.node_id.toString(16).toUpperCase().padStart(4, '0')}</strong></td>
+                            <td><span class="node-chip ${chipClass}">${n.node_type}</span></td>
+                            <td>${formatBytes(n.tx_bytes)}</td>
+                            <td>${formatBytes(n.rx_bytes)}</td>
+                            <td>${n.uptime_sec}s</td>
+                        </tr>`;
+                    }).join('');
+                }
+
+                // Update Pools Table
+                const poolsTbody = document.querySelector('#pools-table tbody');
+                if (topoRes.memory_pools && topoRes.memory_pools.length > 0) {
+                    poolsTbody.innerHTML = topoRes.memory_pools.map(p => `<tr>
+                        <td><strong>0x${p.pool_id.toString(16).toUpperCase().padStart(4, '0')}</strong></td>
+                        <td>Node 0x${p.owner_node.toString(16).toUpperCase().padStart(4, '0')}</td>
+                        <td>${formatBytes(p.size_bytes)}</td>
+                        <td><code>0x${p.token_id.toString(16).toUpperCase().padStart(8, '0')}</code></td>
+                        <td><span style="color: var(--accent-green); font-weight: 600;">${p.permissions}</span></td>
+                    </tr>`).join('');
+                }
+
+                // Update Events Log
+                const eventsDiv = document.getElementById('events-container');
+                if (statsRes.recent_events && statsRes.recent_events.length > 0) {
+                    eventsDiv.innerHTML = statsRes.recent_events.slice().reverse().map(ev => `
+                        <div class="event-row">
+                            <span class="event-time">${new Date(ev.time * 1000).toLocaleTimeString()}</span>
+                            <span class="event-type">${ev.type}</span>
+                            <span>Node 0x${ev.src.toString(16).padStart(2,'0')} ➔ 0x${ev.dst.toString(16).padStart(2,'0')} (${formatBytes(ev.size)}, ${ev.latency_ns}ns)</span>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error("Dashboard refresh error:", err);
+            }
+        }
+
+        setInterval(updateDashboard, 1000);
+        updateDashboard();
+    </script>
+</body>
+</html>

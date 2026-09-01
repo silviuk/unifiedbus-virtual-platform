@@ -1,0 +1,32 @@
+cluster_name: "Disaggregated-Memory-Pooling-SuperPoD"
+topology: "Fat-Tree"
+
+fabric:
+  bandwidth_gbps: 1600.0
+  hop_latency_ns: 12.0
+  switch_count: 4
+  virtual_lanes: 8
+  credit_buffer_kb: 1024
+
+nodes:
+  - id: 1
+    type: "KUNPENG_CPU_HOST"
+    arch: "aarch64"
+    cores: 128
+    memory: "64GB_LOCAL"
+  
+  - id: 2
+    type: "KUNPENG_CPU_HOST"
+    arch: "aarch64"
+    cores: 128
+    memory: "64GB_LOCAL"
+
+  - id: 3
+    type: "SHARED_MEM_NODE"
+    arch: "cxl_ub"
+    memory: "2048GB_POOLED_HBM3"
+
+  - id: 4
+    type: "SHARED_MEM_NODE"
+    arch: "cxl_ub"
+    memory: "2048GB_POOLED_DDR5"
